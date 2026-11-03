@@ -9,13 +9,19 @@
   const startButton = document.getElementById('start-button');
   const scoreElement = document.getElementById('score');
   const livesElement = document.getElementById('lives');
+  const powerElement = document.getElementById('power');
   const bestElement = document.getElementById('best');
 
   const W = canvas.width;
   const H = canvas.height;
   const keys = new Set();
-  const controls = { left: false, right: false, fire: false };
+  const controls = { left: false, right: false, up: false, down: false, fire: false, slow: false };
   const bestKey = 'kohakuShooterBest';
+  const itemTypes = {
+    speed: { label: '速射', color: '#80e8ff', symbol: '⚡' },
+    spread: { label: '三連', color: '#ff9fd2', symbol: '✿' },
+    change: { label: '光弾', color: '#ffe99a', symbol: '◆' }
+  };
   let best = Number(localStorage.getItem(bestKey)) || 0;
   let score = 0;
   let lives = 3;
@@ -26,8 +32,13 @@
   let invulnerable = 0;
   let spirits = [];
   let shots = [];
+  let items = [];
   let particles = [];
   let stars = [];
+  let bulletSpeed = 560;
+  let shotInterval = .22;
+  let bulletCount = 1;
+  let bulletType = 'star';
   const player = { x: W / 2, y: H - 76, width: 58, height: 70, speed: 390 };
   const hero = new Image();
   hero.src = 'assets/kohaku.svg';
@@ -38,17 +49,25 @@
   function updateHud() {
     scoreElement.textContent = formatScore(score);
     livesElement.textContent = lives > 0 ? Array(lives).fill('♥').join(' ') : '—';
+    const typeLabel = bulletType === 'star' ? '星弾' : bulletType === 'orb' ? '光玉' : '札';
+    powerElement.textContent = `${typeLabel} ×${bulletCount}${shotInterval < .22 ? ' ⚡' : ''}`;
   }
   function resetGame() {
     score = 0;
     lives = 3;
     spirits = [];
     shots = [];
+    items = [];
     particles = [];
     spawnTimer = 0.6;
     shotTimer = 0;
     invulnerable = 0;
+    bulletSpeed = 560;
+    shotInterval = .22;
+    bulletCount = 1;
+    bulletType = 'star';
     player.x = W / 2;
+    player.y = H - 76;
     updateHud();
   }
   function startGame() {
@@ -73,12 +92,15 @@
   startButton.addEventListener('click', startGame);
 
   window.addEventListener('keydown', (event) => {
-    if (['ArrowLeft', 'ArrowRight', 'Space'].includes(event.code)) event.preventDefault();
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space'].includes(event.code)) event.preventDefault();
     keys.add(event.code);
     if (!running && event.code === 'Space') startGame();
   });
   window.addEventListener('keyup', (event) => keys.delete(event.code));
-  window.addEventListener('blur', () => { keys.clear(); controls.left = controls.right = controls.fire = false; });
+  window.addEventListener('blur', () => {
+    keys.clear();
+    Object.keys(controls).forEach((control) => { controls[control] = false; });
+  });
 
   document.querySelectorAll('[data-control]').forEach((button) => {
     const control = button.dataset.control;
@@ -100,8 +122,31 @@
     spirits.push({ x: 38 + Math.random() * (W - 76), y: -size, size, speed: 105 + Math.random() * 70 + level * 70, phase: Math.random() * Math.PI * 2, drift: 20 + Math.random() * 40, type: Math.random() < 0.5 ? '👻' : '🧚' });
   }
   function shoot() {
-    shots.push({ x: player.x, y: player.y - 32, speed: 560, phase: Math.random() * Math.PI * 2 });
+    const spacing = .13;
+    for (let i = 0; i < bulletCount; i++) {
+      const angle = (i - (bulletCount - 1) / 2) * spacing;
+      shots.push({ x: player.x, y: player.y - 32, vx: Math.sin(angle) * bulletSpeed, vy: -Math.cos(angle) * bulletSpeed, phase: Math.random() * Math.PI * 2, type: bulletType });
+    }
     for (let i = 0; i < 4; i++) particles.push({ x: player.x + (Math.random() - .5) * 12, y: player.y - 20, vx: (Math.random() - .5) * 50, vy: -Math.random() * 70, life: .22, color: '#ffe99a', size: 3 + Math.random() * 3 });
+  }
+  function dropItem(x, y) {
+    // Every defeated fairy has a chance to leave a random shot upgrade.
+    if (Math.random() > .58) return;
+    const types = Object.keys(itemTypes);
+    const type = types[Math.floor(Math.random() * types.length)];
+    items.push({ x, y, type, speed: 105, phase: Math.random() * Math.PI * 2 });
+  }
+  function collectItem(item) {
+    if (item.type === 'speed') {
+      bulletSpeed = Math.min(980, bulletSpeed + 100);
+      shotInterval = Math.max(.095, shotInterval - .018);
+    } else if (item.type === 'spread') {
+      bulletCount = Math.min(5, bulletCount + 1);
+    } else {
+      bulletType = bulletType === 'star' ? 'orb' : bulletType === 'orb' ? 'talisman' : 'star';
+    }
+    burst(item.x, item.y, itemTypes[item.type].color);
+    updateHud();
   }
   function burst(x, y, color = '#ff9dd2') {
     for (let i = 0; i < 14; i++) {
@@ -119,14 +164,22 @@
   function update(dt) {
     const left = keys.has('ArrowLeft') || keys.has('KeyA') || controls.left;
     const right = keys.has('ArrowRight') || keys.has('KeyD') || controls.right;
+    const up = keys.has('ArrowUp') || keys.has('KeyW') || controls.up;
+    const down = keys.has('ArrowDown') || keys.has('KeyS') || controls.down;
     const firing = keys.has('Space') || controls.fire;
-    if (left) player.x -= player.speed * dt;
-    if (right) player.x += player.speed * dt;
+    const slow = keys.has('ShiftLeft') || keys.has('ShiftRight') || controls.slow;
+    const speed = player.speed * (slow ? .42 : 1);
+    let moveX = (right ? 1 : 0) - (left ? 1 : 0);
+    let moveY = (down ? 1 : 0) - (up ? 1 : 0);
+    if (moveX && moveY) { moveX *= Math.SQRT1_2; moveY *= Math.SQRT1_2; }
+    player.x += moveX * speed * dt;
+    player.y += moveY * speed * dt;
     player.x = Math.max(34, Math.min(W - 34, player.x));
+    player.y = Math.max(45, Math.min(H - 35, player.y));
     if (invulnerable > 0) invulnerable -= dt;
 
     shotTimer -= dt;
-    if (firing && shotTimer <= 0) { shoot(); shotTimer = .22; }
+    if (firing && shotTimer <= 0) { shoot(); shotTimer = shotInterval; }
     spawnTimer -= dt;
     if (spawnTimer <= 0) {
       spawnSpirit();
@@ -135,8 +188,10 @@
     if (Math.random() < dt * 1.2) addStar();
     stars.forEach((star) => star.y += star.speed * dt);
     stars = stars.filter((star) => star.y < H + 8);
-    shots.forEach((shot) => shot.y -= shot.speed * dt);
-    shots = shots.filter((shot) => shot.y > -20);
+    shots.forEach((shot) => { shot.x += shot.vx * dt; shot.y += shot.vy * dt; });
+    shots = shots.filter((shot) => shot.y > -20 && shot.y < H + 20 && shot.x > -20 && shot.x < W + 20);
+    items.forEach((item) => { item.y += item.speed * dt; item.x += Math.sin(performance.now() / 360 + item.phase) * 30 * dt; });
+    items = items.filter((item) => item.y < H + 20);
 
     for (const spirit of spirits) {
       spirit.y += spirit.speed * dt;
@@ -157,6 +212,7 @@
           shot.dead = true;
           spirit.dead = true;
           score += 100;
+          dropItem(spirit.x, spirit.y);
           burst(spirit.x, spirit.y);
           updateHud();
           break;
@@ -166,6 +222,10 @@
     shots = shots.filter((shot) => !shot.dead);
     spirits = spirits.filter((spirit) => !spirit.dead);
 
+    items = items.filter((item) => {
+      if (hit(player, item, 30)) { collectItem(item); return false; }
+      return true;
+    });
     if (invulnerable <= 0) {
       for (const spirit of spirits) {
         if (!spirit.passed && hit(player, spirit, 38)) {
@@ -191,12 +251,10 @@
     gradient.addColorStop(1, '#5b356e');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
-    // Distant shrine silhouettes
     ctx.fillStyle = '#211b3c';
     ctx.beginPath(); ctx.moveTo(0, 450); ctx.quadraticCurveTo(180, 400, 360, 455); ctx.quadraticCurveTo(600, 390, 800, 440); ctx.lineTo(800, 600); ctx.lineTo(0, 600); ctx.fill();
     ctx.fillStyle = '#17152f';
     ctx.beginPath(); ctx.moveTo(0, 510); ctx.quadraticCurveTo(220, 450, 440, 520); ctx.quadraticCurveTo(650, 445, 800, 505); ctx.lineTo(800, 600); ctx.lineTo(0, 600); ctx.fill();
-    // Torii gate silhouette
     ctx.fillStyle = '#a94771';
     ctx.fillRect(94, 255, 13, 135); ctx.fillRect(185, 255, 13, 135);
     ctx.fillRect(78, 253, 136, 12); ctx.fillRect(88, 272, 116, 7);
@@ -206,7 +264,6 @@
       ctx.beginPath(); ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2); ctx.fill();
     });
     ctx.globalAlpha = 1;
-    // Drifting sakura petals
     ctx.fillStyle = '#ffc9e5';
     for (let i = 0; i < 9; i++) {
       const x = (i * 97 + performance.now() * .018) % W;
@@ -229,15 +286,17 @@
     }
     ctx.restore();
   }
-  function draw() {
-    drawBackground();
-    // Glowing star talismans
-    shots.forEach((shot) => {
-      ctx.save();
-      ctx.translate(shot.x, shot.y);
-      ctx.rotate(performance.now() / 180 + shot.phase);
-      ctx.shadowColor = '#ffe99a'; ctx.shadowBlur = 14;
-      ctx.fillStyle = '#fff4bd';
+  function drawShot(shot) {
+    ctx.save();
+    ctx.translate(shot.x, shot.y);
+    ctx.rotate(performance.now() / 180 + shot.phase);
+    const color = shot.type === 'orb' ? '#85e9ff' : shot.type === 'talisman' ? '#ff9fd2' : '#fff4bd';
+    ctx.shadowColor = color; ctx.shadowBlur = 14; ctx.fillStyle = color;
+    if (shot.type === 'orb') {
+      ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
+    } else if (shot.type === 'talisman') {
+      ctx.fillRect(-4, -9, 8, 18);
+    } else {
       ctx.beginPath();
       for (let i = 0; i < 10; i++) {
         const radius = i % 2 === 0 ? 10 : 4;
@@ -247,6 +306,21 @@
         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function draw() {
+    drawBackground();
+    shots.forEach(drawShot);
+    items.forEach((item) => {
+      const style = itemTypes[item.type];
+      ctx.save(); ctx.translate(item.x, item.y);
+      ctx.shadowColor = style.color; ctx.shadowBlur = 14;
+      ctx.fillStyle = style.color;
+      ctx.beginPath(); ctx.arc(0, 0, 13, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0; ctx.fillStyle = '#2b1d3d';
+      ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(style.symbol, 0, 1);
       ctx.restore();
     });
     spirits.forEach((spirit) => {

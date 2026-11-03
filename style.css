@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap');
+
+:root {
+  color-scheme: light;
+  font-family: 'Nunito', 'Zen Maru Gothic', system-ui, sans-serif;
+  color: #512b38;
+  background: #fff3f6;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 50% 0%, #fff 0, #fff4f6 52%, #ffe6ed 100%);
+}
+button { font: inherit; }
+.game-shell { width: min(940px, 100%); margin: 0 auto; padding: 22px 20px 28px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 14px; }
+.brand { color: #d83a62; font-size: 1.3rem; font-weight: 900; text-decoration: none; letter-spacing: .02em; }
+.topbar p, footer { margin: 0; color: #9c6576; font-size: .9rem; font-weight: 700; }
+.game-card { overflow: hidden; padding: 14px; border: 1px solid #f6cfda; border-radius: 22px; background: #fff; box-shadow: 0 16px 45px #bd66851c; }
+.hud { display: flex; justify-content: space-between; align-items: center; min-height: 52px; padding: 2px 12px 12px; }
+.hud > div { display: flex; flex-direction: column; gap: 1px; min-width: 90px; }
+.hud > div:nth-child(2) { align-items: center; }
+.hud > div:last-child { align-items: flex-end; }
+.hud-label { color: #c17e91; font-size: .68rem; font-weight: 900; letter-spacing: .15em; }
+.hud strong { color: #d83a62; font-size: 1.13rem; font-weight: 900; }
+#lives { font-size: 1rem; letter-spacing: .12em; }
+.canvas-wrap { position: relative; overflow: hidden; border-radius: 13px; background: #b7e9ef; line-height: 0; }
+canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; touch-action: none; }
+.overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 18px; background: #47263479; line-height: normal; }
+.overlay.hidden { display: none; }
+.overlay-card { width: min(390px, 100%); padding: 26px 24px 22px; border: 3px solid #fff; border-radius: 24px; background: #fff9fa; text-align: center; box-shadow: 0 12px 40px #4e25354d; }
+.big-berry { font-size: 3.2rem; line-height: 1; filter: drop-shadow(0 4px 0 #f7c6d3); }
+h1 { margin: 10px 0 6px; color: #d83a62; font-size: clamp(1.35rem, 5vw, 1.8rem); font-weight: 900; }
+.overlay-card p { margin: 0 auto 18px; color: #805464; font-size: .94rem; font-weight: 700; line-height: 1.6; }
+#start-button { padding: 12px 28px; border: 0; border-radius: 999px; background: #ed5275; color: white; font-size: 1rem; font-weight: 900; box-shadow: 0 4px 0 #c83459; cursor: pointer; transition: transform .12s, box-shadow .12s; }
+#start-button:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #c83459; }
+#start-button:active { transform: translateY(2px); box-shadow: 0 2px 0 #c83459; }
+.overlay-card small { display: block; margin-top: 17px; color: #a57685; font-size: .72rem; font-weight: 700; }
+.touch-controls { display: none; justify-content: center; gap: 22px; padding-top: 12px; }
+.touch-controls button { width: 64px; height: 48px; border: 1px solid #f2c5d1; border-radius: 15px; background: #fff4f7; color: #d83a62; font-size: 1.2rem; font-weight: 900; touch-action: none; user-select: none; }
+.touch-controls button[data-control="fire"] { background: #ed5275; color: #fff; }
+footer { padding: 14px 6px 0; text-align: center; line-height: 1.6; }
+@media (max-width: 640px) {
+  .game-shell { padding: 14px 10px 20px; }
+  .topbar { display: block; text-align: center; }
+  .brand { font-size: 1.2rem; }
+  .topbar p { margin-top: 4px; font-size: .78rem; }
+  .game-card { padding: 8px; border-radius: 16px; }
+  .hud { min-height: 46px; padding: 2px 8px 8px; }
+  .hud > div { min-width: 70px; }
+  .hud strong { font-size: 1rem; }
+  #lives { font-size: .83rem; }
+  .touch-controls { display: flex; }
+  .overlay-card { padding: 19px 16px 16px; }
+}

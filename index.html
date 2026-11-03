@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff3f6">
+  <title>いちごシューター</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="いちごシューター ホーム">🍓 <span>いちごシューター</span></a>
+      <p>あま〜い弾で、むしさんを追いはらおう！</p>
+    </header>
+
+    <section class="game-card" aria-label="ゲーム画面">
+      <div class="hud" aria-live="polite">
+        <div><span class="hud-label">SCORE</span><strong id="score">00000</strong></div>
+        <div><span class="hud-label">LIFE</span><strong id="lives">🍓 🍓 🍓</strong></div>
+        <div><span class="hud-label">BEST</span><strong id="best">00000</strong></div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="game" width="800" height="600" aria-label="いちごのシューティングゲーム"></canvas>
+        <div id="overlay" class="overlay">
+          <div class="overlay-card">
+            <div class="big-berry" aria-hidden="true">🍓</div>
+            <h1 id="overlay-title">いちごシューター</h1>
+            <p id="overlay-message">いちごの種を飛ばして、むしさんを追いはらおう！</p>
+            <button id="start-button" type="button">ゲームスタート</button>
+            <small>移動：← → / A D　　ショット：スペース</small>
+          </div>
+        </div>
+      </div>
+      <div class="touch-controls" aria-label="タッチ操作">
+        <button type="button" data-control="left" aria-label="左へ">◀</button>
+        <button type="button" data-control="fire" aria-label="ショット">●</button>
+        <button type="button" data-control="right" aria-label="右へ">▶</button>
+      </div>
+    </section>
+    <footer>むしさんを逃がすとライフが減るよ。たくさん倒してハイスコアを目指そう！</footer>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>

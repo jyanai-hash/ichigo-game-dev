@@ -22,12 +22,13 @@ button { font: inherit; }
 .topbar p, footer { margin: 0; color: #c9b3d8; font-size: .9rem; font-weight: 700; }
 .game-card { overflow: hidden; padding: 14px; border: 1px solid #73547f; border-radius: 22px; background: #241d39; box-shadow: 0 16px 45px #09071180; }
 .hud { display: flex; justify-content: space-between; align-items: center; min-height: 52px; padding: 2px 12px 12px; }
-.hud > div { display: flex; flex-direction: column; gap: 1px; min-width: 90px; }
+.hud > div { display: flex; flex-direction: column; gap: 1px; min-width: 76px; }
 .hud > div:nth-child(2) { align-items: center; }
 .hud > div:last-child { align-items: flex-end; }
 .hud-label { color: #c4a4cf; font-size: .68rem; font-weight: 900; letter-spacing: .15em; }
-.hud strong { color: #ffe1a1; font-size: 1.13rem; font-weight: 900; }
+.hud strong { color: #ffe1a1; font-size: 1.05rem; font-weight: 900; }
 #lives { color: #ff9fca; font-size: 1rem; letter-spacing: .12em; }
+#power { color: #9cecff; font-size: .9rem; }
 .canvas-wrap { position: relative; overflow: hidden; border-radius: 13px; background: #17142b; line-height: 0; }
 canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; touch-action: none; }
 .overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 18px; background: #100d20a8; line-height: normal; }
@@ -41,9 +42,10 @@ h1 { margin: 7px 0 6px; color: #ffd5e9; font-size: clamp(1.35rem, 5vw, 1.8rem); 
 #start-button:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #873c70; }
 #start-button:active { transform: translateY(2px); box-shadow: 0 2px 0 #873c70; }
 .overlay-card small { display: block; margin-top: 17px; color: #c4a4cf; font-size: .72rem; font-weight: 700; }
-.touch-controls { display: none; justify-content: center; gap: 22px; padding-top: 12px; }
-.touch-controls button { width: 64px; height: 48px; border: 1px solid #73547f; border-radius: 15px; background: #302543; color: #ffd5e9; font-size: 1.2rem; font-weight: 900; touch-action: none; user-select: none; }
+.touch-controls { display: none; justify-content: center; flex-wrap: wrap; gap: 8px; padding-top: 12px; }
+.touch-controls button { width: 54px; height: 46px; border: 1px solid #73547f; border-radius: 14px; background: #302543; color: #ffd5e9; font-size: 1.1rem; font-weight: 900; touch-action: none; user-select: none; }
 .touch-controls button[data-control="fire"] { background: #ce629c; color: #fff; }
+.touch-controls button[data-control="slow"] { width: 62px; color: #9cecff; font-size: .78rem; }
 footer { padding: 14px 6px 0; text-align: center; line-height: 1.6; }
 @media (max-width: 640px) {
   .game-shell { padding: 14px 10px 20px; }
@@ -51,10 +53,12 @@ footer { padding: 14px 6px 0; text-align: center; line-height: 1.6; }
   .brand { font-size: 1.2rem; }
   .topbar p { margin-top: 4px; font-size: .78rem; }
   .game-card { padding: 8px; border-radius: 16px; }
-  .hud { min-height: 46px; padding: 2px 8px 8px; }
-  .hud > div { min-width: 70px; }
-  .hud strong { font-size: 1rem; }
-  #lives { font-size: .83rem; }
+  .hud { min-height: 46px; padding: 2px 4px 8px; }
+  .hud > div { min-width: 0; }
+  .hud strong { font-size: .86rem; }
+  .hud-label { font-size: .59rem; }
+  #lives { font-size: .76rem; }
+  #power { font-size: .76rem; }
   .touch-controls { display: flex; }
   .overlay-card { padding: 14px 16px 16px; }
   .hero-portrait { width: 70px; height: 82px; }

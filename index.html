@@ -18,7 +18,9 @@
       <div class="hud" aria-live="polite">
         <div><span class="hud-label">SCORE</span><strong id="score">00000</strong></div>
         <div><span class="hud-label">残機</span><strong id="lives">♥ ♥ ♥</strong></div>
+        <div><span class="hud-label">PHASE</span><strong id="phase">1</strong></div>
         <div><span class="hud-label">装備</span><strong id="power">星弾 ×1</strong></div>
+        <div><span class="hud-label">ボム</span><strong id="bombs">✹ ✹ ✹</strong></div>
         <div><span class="hud-label">BEST</span><strong id="best">00000</strong></div>
       </div>
       <div class="canvas-wrap">
@@ -30,7 +32,7 @@
             <h1 id="overlay-title">星詠みのこはく</h1>
             <p id="overlay-message">ふしぎな神社に迷いこんだ妖精たち。星の札を放って、夜空の平和を取りもどそう！</p>
             <button id="start-button" type="button">出撃する</button>
-            <small>移動：矢印 / WASD　ショット：スペース　低速：Shift</small>
+            <small>移動：矢印 / WASD　ショット：スペース　低速：Shift　ボム：X</small>
           </div>
         </div>
       </div>
@@ -41,9 +43,10 @@
         <button type="button" data-control="down" aria-label="下へ">▼</button>
         <button type="button" data-control="right" aria-label="右へ">▶</button>
         <button type="button" data-control="slow" aria-label="低速モード">低速</button>
+        <button type="button" data-control="bomb" aria-label="ボム">ボム</button>
       </div>
     </section>
-    <footer>妖精を倒すと強化アイテムを落とすことがあるよ。こはくを動かして、夜空を守ろう！</footer>
+    <footer>妖精を倒して強化アイテムを集めよう。弾幕を避けて、夜空を守ろう！</footer>
   </main>
   <script src="game.js"></script>
 </body>

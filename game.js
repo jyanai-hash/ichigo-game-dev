@@ -15,7 +15,7 @@
   const H = canvas.height;
   const keys = new Set();
   const controls = { left: false, right: false, fire: false };
-  const bestKey = 'ichigoShooterBest';
+  const bestKey = 'kohakuShooterBest';
   let best = Number(localStorage.getItem(bestKey)) || 0;
   let score = 0;
   let lives = 3;
@@ -24,23 +24,25 @@
   let spawnTimer = 0;
   let shotTimer = 0;
   let invulnerable = 0;
-  let bugs = [];
+  let spirits = [];
   let shots = [];
   let particles = [];
-  let clouds = [];
-  const player = { x: W / 2, y: H - 76, width: 54, height: 56, speed: 390 };
+  let stars = [];
+  const player = { x: W / 2, y: H - 76, width: 58, height: 70, speed: 390 };
+  const hero = new Image();
+  hero.src = 'assets/kohaku.svg';
 
   bestElement.textContent = formatScore(best);
 
   function formatScore(value) { return String(value).padStart(5, '0'); }
   function updateHud() {
     scoreElement.textContent = formatScore(score);
-    livesElement.textContent = lives > 0 ? Array(lives).fill('🍓').join(' ') : '—';
+    livesElement.textContent = lives > 0 ? Array(lives).fill('♥').join(' ') : '—';
   }
   function resetGame() {
     score = 0;
     lives = 3;
-    bugs = [];
+    spirits = [];
     shots = [];
     particles = [];
     spawnTimer = 0.6;
@@ -63,9 +65,9 @@
       localStorage.setItem(bestKey, String(best));
       bestElement.textContent = formatScore(best);
     }
-    title.textContent = 'ゲームオーバー';
-    message.textContent = `スコアは ${formatScore(score)} 点！ もう一度チャレンジしてね。`;
-    startButton.textContent = 'もう一度あそぶ';
+    title.textContent = 'ひとやすみ！';
+    message.textContent = `スコアは ${formatScore(score)} 点！ こはくともう一度、夜空を守ろう。`;
+    startButton.textContent = 'もう一度出撃';
     overlay.classList.remove('hidden');
   }
   startButton.addEventListener('click', startGame);
@@ -87,22 +89,22 @@
     button.addEventListener('lostpointercapture', () => set(false));
   });
 
-  function addCloud() {
-    clouds.push({ x: Math.random() * W, y: -50, size: 22 + Math.random() * 32, speed: 12 + Math.random() * 18 });
+  function addStar() {
+    stars.push({ x: Math.random() * W, y: -8, size: 1 + Math.random() * 2.5, speed: 18 + Math.random() * 36, alpha: .25 + Math.random() * .65 });
   }
-  for (let i = 0; i < 8; i++) clouds.push({ x: Math.random() * W, y: Math.random() * H, size: 22 + Math.random() * 32, speed: 12 + Math.random() * 18 });
+  for (let i = 0; i < 90; i++) stars.push({ x: Math.random() * W, y: Math.random() * H, size: 1 + Math.random() * 2.5, speed: 18 + Math.random() * 36, alpha: .25 + Math.random() * .65 });
 
-  function spawnBug() {
+  function spawnSpirit() {
     const level = Math.min(1.8, score / 8000);
     const size = 34 + Math.random() * 13;
-    bugs.push({ x: 38 + Math.random() * (W - 76), y: -size, size, speed: 105 + Math.random() * 70 + level * 70, phase: Math.random() * Math.PI * 2, drift: 20 + Math.random() * 40, type: Math.random() < 0.5 ? '🐞' : '🐝' });
+    spirits.push({ x: 38 + Math.random() * (W - 76), y: -size, size, speed: 105 + Math.random() * 70 + level * 70, phase: Math.random() * Math.PI * 2, drift: 20 + Math.random() * 40, type: Math.random() < 0.5 ? '👻' : '🧚' });
   }
   function shoot() {
-    shots.push({ x: player.x, y: player.y - 28, speed: 560 });
-    for (let i = 0; i < 4; i++) particles.push({ x: player.x + (Math.random() - .5) * 12, y: player.y - 16, vx: (Math.random() - .5) * 50, vy: -Math.random() * 70, life: .22, color: '#ffe6a3', size: 3 + Math.random() * 3 });
+    shots.push({ x: player.x, y: player.y - 32, speed: 560, phase: Math.random() * Math.PI * 2 });
+    for (let i = 0; i < 4; i++) particles.push({ x: player.x + (Math.random() - .5) * 12, y: player.y - 20, vx: (Math.random() - .5) * 50, vy: -Math.random() * 70, life: .22, color: '#ffe99a', size: 3 + Math.random() * 3 });
   }
-  function burst(x, y, color = '#ff7897') {
-    for (let i = 0; i < 12; i++) {
+  function burst(x, y, color = '#ff9dd2') {
+    for (let i = 0; i < 14; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = 60 + Math.random() * 160;
       particles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: .35 + Math.random() * .3, color, size: 3 + Math.random() * 5 });
@@ -127,89 +129,89 @@
     if (firing && shotTimer <= 0) { shoot(); shotTimer = .22; }
     spawnTimer -= dt;
     if (spawnTimer <= 0) {
-      spawnBug();
+      spawnSpirit();
       spawnTimer = Math.max(.38, 1.05 - score / 18000) * (.72 + Math.random() * .56);
     }
-    if (Math.random() < dt * .16) addCloud();
-    clouds.forEach((cloud) => cloud.y += cloud.speed * dt);
-    clouds = clouds.filter((cloud) => cloud.y < H + 60);
+    if (Math.random() < dt * 1.2) addStar();
+    stars.forEach((star) => star.y += star.speed * dt);
+    stars = stars.filter((star) => star.y < H + 8);
     shots.forEach((shot) => shot.y -= shot.speed * dt);
     shots = shots.filter((shot) => shot.y > -20);
 
-    for (const bug of bugs) {
-      bug.y += bug.speed * dt;
-      bug.x += Math.sin(performance.now() / 380 + bug.phase) * bug.drift * dt;
-      if (bug.y > H + 30 && !bug.passed) {
-        bug.passed = true;
+    for (const spirit of spirits) {
+      spirit.y += spirit.speed * dt;
+      spirit.x += Math.sin(performance.now() / 380 + spirit.phase) * spirit.drift * dt;
+      if (spirit.y > H + 30 && !spirit.passed) {
+        spirit.passed = true;
         lives -= 1;
-        burst(bug.x, H - 12, '#ffc45d');
+        burst(spirit.x, H - 12, '#a7dcff');
         updateHud();
         if (lives <= 0) { endGame(); return; }
       }
     }
-    bugs = bugs.filter((bug) => bug.y <= H + 50 && !bug.dead);
+    spirits = spirits.filter((spirit) => spirit.y <= H + 50 && !spirit.dead);
 
     for (const shot of shots) {
-      for (const bug of bugs) {
-        if (!bug.dead && hit(shot, bug, bug.size * .42)) {
+      for (const spirit of spirits) {
+        if (!spirit.dead && hit(shot, spirit, spirit.size * .42)) {
           shot.dead = true;
-          bug.dead = true;
+          spirit.dead = true;
           score += 100;
-          burst(bug.x, bug.y);
+          burst(spirit.x, spirit.y);
           updateHud();
           break;
         }
       }
     }
     shots = shots.filter((shot) => !shot.dead);
-    bugs = bugs.filter((bug) => !bug.dead);
+    spirits = spirits.filter((spirit) => !spirit.dead);
 
     if (invulnerable <= 0) {
-      for (const bug of bugs) {
-        if (!bug.passed && hit(player, bug, 38)) {
-          bug.dead = true;
+      for (const spirit of spirits) {
+        if (!spirit.passed && hit(player, spirit, 38)) {
+          spirit.dead = true;
           lives -= 1;
           invulnerable = 1.3;
-          burst(bug.x, bug.y, '#fff0a8');
+          burst(spirit.x, spirit.y, '#fff0a8');
           updateHud();
           if (lives <= 0) { endGame(); return; }
           break;
         }
       }
     }
-    bugs = bugs.filter((bug) => !bug.dead);
+    spirits = spirits.filter((spirit) => !spirit.dead);
     particles.forEach((p) => { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 110 * dt; p.life -= dt; });
     particles = particles.filter((p) => p.life > 0);
   }
 
   function drawBackground() {
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
-    gradient.addColorStop(0, '#9de0eb');
-    gradient.addColorStop(.72, '#d7f4e3');
-    gradient.addColorStop(1, '#a9db91');
+    gradient.addColorStop(0, '#17142b');
+    gradient.addColorStop(.68, '#30204e');
+    gradient.addColorStop(1, '#5b356e');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
-    // Distant hills
-    ctx.fillStyle = '#b4e2a5';
-    ctx.beginPath(); ctx.moveTo(0, 450); ctx.quadraticCurveTo(180, 370, 360, 455); ctx.quadraticCurveTo(600, 350, 800, 440); ctx.lineTo(800, 600); ctx.lineTo(0, 600); ctx.fill();
-    ctx.fillStyle = '#91cf83';
-    ctx.beginPath(); ctx.moveTo(0, 510); ctx.quadraticCurveTo(220, 430, 440, 520); ctx.quadraticCurveTo(650, 435, 800, 505); ctx.lineTo(800, 600); ctx.lineTo(0, 600); ctx.fill();
-    clouds.forEach((cloud) => {
-      ctx.globalAlpha = .45;
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.ellipse(cloud.x, cloud.y, cloud.size * 1.35, cloud.size * .48, 0, 0, Math.PI * 2);
-      ctx.ellipse(cloud.x - cloud.size * .48, cloud.y + 3, cloud.size * .7, cloud.size * .38, 0, 0, Math.PI * 2);
-      ctx.ellipse(cloud.x + cloud.size * .5, cloud.y + 2, cloud.size * .72, cloud.size * .42, 0, 0, Math.PI * 2);
-      ctx.fill();
+    // Distant shrine silhouettes
+    ctx.fillStyle = '#211b3c';
+    ctx.beginPath(); ctx.moveTo(0, 450); ctx.quadraticCurveTo(180, 400, 360, 455); ctx.quadraticCurveTo(600, 390, 800, 440); ctx.lineTo(800, 600); ctx.lineTo(0, 600); ctx.fill();
+    ctx.fillStyle = '#17152f';
+    ctx.beginPath(); ctx.moveTo(0, 510); ctx.quadraticCurveTo(220, 450, 440, 520); ctx.quadraticCurveTo(650, 445, 800, 505); ctx.lineTo(800, 600); ctx.lineTo(0, 600); ctx.fill();
+    // Torii gate silhouette
+    ctx.fillStyle = '#a94771';
+    ctx.fillRect(94, 255, 13, 135); ctx.fillRect(185, 255, 13, 135);
+    ctx.fillRect(78, 253, 136, 12); ctx.fillRect(88, 272, 116, 7);
+    stars.forEach((star) => {
+      ctx.globalAlpha = star.alpha;
+      ctx.fillStyle = '#fff2bf';
+      ctx.beginPath(); ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2); ctx.fill();
     });
     ctx.globalAlpha = 1;
-    // Floating petals
-    ctx.fillStyle = '#fff7fa';
-    for (let i = 0; i < 10; i++) {
+    // Drifting sakura petals
+    ctx.fillStyle = '#ffc9e5';
+    for (let i = 0; i < 9; i++) {
       const x = (i * 97 + performance.now() * .018) % W;
       const y = (i * 71 + performance.now() * .035) % H;
-      ctx.globalAlpha = .55;
+      ctx.globalAlpha = .45;
       ctx.beginPath(); ctx.ellipse(x, y, 4, 7, .5, 0, Math.PI * 2); ctx.fill();
     }
     ctx.globalAlpha = 1;
@@ -218,26 +220,40 @@
     if (invulnerable > 0 && Math.floor(performance.now() / 90) % 2 === 0) return;
     ctx.save();
     ctx.translate(player.x, player.y);
-    ctx.font = '50px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🍓', 0, 0);
+    if (hero.complete && hero.naturalWidth) ctx.drawImage(hero, -35, -45, 70, 90);
+    else {
+      ctx.fillStyle = '#f6c6d9';
+      ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(-7, -3, 3, 0, Math.PI * 2); ctx.arc(7, -3, 3, 0, Math.PI * 2); ctx.fill();
+    }
     ctx.restore();
   }
   function draw() {
     drawBackground();
-    // Sweet seed shots
-    ctx.save();
-    ctx.shadowColor = '#fff4ae'; ctx.shadowBlur = 12;
+    // Glowing star talismans
     shots.forEach((shot) => {
-      ctx.fillStyle = '#fff5a8';
-      ctx.beginPath(); ctx.ellipse(shot.x, shot.y, 5, 10, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.save();
+      ctx.translate(shot.x, shot.y);
+      ctx.rotate(performance.now() / 180 + shot.phase);
+      ctx.shadowColor = '#ffe99a'; ctx.shadowBlur = 14;
+      ctx.fillStyle = '#fff4bd';
+      ctx.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const radius = i % 2 === 0 ? 10 : 4;
+        const angle = -Math.PI / 2 + i * Math.PI / 5;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
     });
-    ctx.restore();
-    bugs.forEach((bug) => {
-      ctx.save(); ctx.translate(bug.x, bug.y);
-      ctx.font = `${bug.size}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(bug.type, 0, 0);
+    spirits.forEach((spirit) => {
+      ctx.save(); ctx.translate(spirit.x, spirit.y);
+      ctx.font = `${spirit.size}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.shadowColor = '#d5b9ff'; ctx.shadowBlur = 12;
+      ctx.fillText(spirit.type, 0, 0);
       ctx.restore();
     });
     particles.forEach((p) => {

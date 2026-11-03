@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 260" role="img" aria-labelledby="title desc">
+  <title id="title">星詠みの巫女・こはく</title>
+  <desc id="desc">桜色のリボンと白い袖を身につけた、星を司るかわいい巫女の女の子。</desc>
+  <defs>
+    <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#76508c"/><stop offset="1" stop-color="#35264f"/></linearGradient>
+    <linearGradient id="skirt" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f5a8c9"/><stop offset="1" stop-color="#d85e99"/></linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe9d9"/><stop offset="1" stop-color="#f9cbbf"/></linearGradient>
+  </defs>
+  <!-- Hair silhouette and side locks -->
+  <path d="M53 88Q39 35 83 21Q119 2 153 29Q188 44 175 105L166 159 56 158Z" fill="url(#hair)"/>
+  <path d="M59 85Q38 105 48 170L66 180 78 114M159 82Q183 108 173 166L155 181 145 112" fill="#513765" stroke="#35264f" stroke-width="5" stroke-linejoin="round"/>
+  <!-- Ribbon -->
+  <path d="M151 38Q171 20 190 35L177 53 195 64Q174 77 156 57Z" fill="#f58eb8" stroke="#ffe0ee" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="164" cy="49" r="8" fill="#ffe6a1"/>
+  <!-- Face -->
+  <path d="M71 75Q73 43 112 43Q153 43 154 79L148 111Q139 137 112 141Q84 137 75 110Z" fill="url(#face)"/>
+  <!-- Bangs -->
+  <path d="M65 82Q62 38 104 33Q147 29 163 66Q145 55 130 56Q116 76 90 72L73 91Z" fill="url(#hair)" stroke="#35264f" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M106 42Q117 61 108 76Q130 70 132 51" fill="#614477"/>
+  <!-- Eyes and blush -->
+  <ellipse cx="94" cy="97" rx="8" ry="11" fill="#493353"/><ellipse cx="131" cy="97" rx="8" ry="11" fill="#493353"/>
+  <ellipse cx="96" cy="94" rx="2.5" ry="4" fill="#fff"/><ellipse cx="133" cy="94" rx="2.5" ry="4" fill="#fff"/>
+  <path d="M105 115Q112 122 119 115" fill="none" stroke="#c66d7e" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="82" cy="111" rx="9" ry="4" fill="#ef9aa2" opacity=".55"/><ellipse cx="143" cy="111" rx="9" ry="4" fill="#ef9aa2" opacity=".55"/>
+  <!-- Neck and shrine-maiden outfit -->
+  <path d="M100 133L100 151 124 151 124 133" fill="#f4c2b8"/>
+  <path d="M72 148Q84 137 101 140L112 154 125 140Q145 139 157 151L174 215 50 215Z" fill="#fff8f1" stroke="#d7c6de" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M101 141L112 157 125 141 134 153 122 177 112 168 101 177 90 153Z" fill="#e786ad"/>
+  <path d="M53 206Q111 190 171 206L179 240Q113 255 43 240Z" fill="url(#skirt)" stroke="#a74d80" stroke-width="4"/>
+  <path d="M48 218Q111 204 176 219" fill="none" stroke="#ffe6a1" stroke-width="5"/>
+  <!-- Puffy sleeves -->
+  <path d="M77 150Q58 140 41 156L28 181Q39 195 63 187L86 170Z" fill="#fff8f1" stroke="#d7c6de" stroke-width="4"/>
+  <path d="M145 150Q165 139 181 156L193 181Q181 195 157 187L136 170Z" fill="#fff8f1" stroke="#d7c6de" stroke-width="4"/>
+  <path d="M30 179Q47 185 64 180M190 179Q174 185 157 180" fill="none" stroke="#e786ad" stroke-width="6"/>
+  <!-- Star talisman -->
+  <path d="M112 175L116 184 126 185 119 192 121 202 112 197 103 202 105 192 98 185 108 184Z" fill="#ffe69a" stroke="#d9a74b" stroke-width="2"/>
+  <!-- Tiny hair ornaments -->
+  <path d="M71 65L74 57 77 65 85 68 77 71 74 79 71 71 63 68Z" fill="#ffe69a"/>
+</svg>

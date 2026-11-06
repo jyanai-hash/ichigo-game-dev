@@ -23,6 +23,15 @@
         <div><span class="hud-label">ボム</span><strong id="bombs">✹ ✹ ✹</strong></div>
         <div><span class="hud-label">BEST</span><strong id="best">00000</strong></div>
       </div>
+      <p class="weapon-effect" aria-live="polite"><strong id="effect-name">星弾：標準弾</strong><span id="effect-description">追加効果なし。安定した基本ショット。</span></p>
+      <p id="bonus-effect" class="bonus-effect" aria-live="polite"></p>
+      <section class="upgrade-status" aria-label="武器強化ゲージ" aria-live="polite">
+        <div class="upgrade-row"><span id="speed-level">速射 Lv.1</span><progress id="speed-progress" value="0" max="1"></progress><span id="speed-gauge">0/1</span></div>
+        <div class="upgrade-row"><span id="spread-level">拡散 Lv.1</span><progress id="spread-progress" value="0" max="1"></progress><span id="spread-gauge">0/1</span></div>
+        <div class="upgrade-row"><span id="rear-level">後方 Lv.1</span><progress id="rear-progress" value="0" max="1"></progress><span id="rear-gauge">0/1</span></div>
+        <div class="upgrade-row"><span id="orb-level">光玉 Lv.1</span><progress id="orb-progress" value="0" max="1"></progress><span id="orb-gauge">0/1</span></div>
+        <div class="upgrade-row"><span id="talisman-level">札 Lv.1</span><progress id="talisman-progress" value="0" max="1"></progress><span id="talisman-gauge">0/1</span></div>
+      </section>
       <div class="canvas-wrap">
         <canvas id="game" width="800" height="600" aria-label="星詠みのこはくの幻想シューティングゲーム"></canvas>
         <div id="overlay" class="overlay">
@@ -31,7 +40,76 @@
             <p class="hero-name">星詠みの巫女・こはく</p>
             <h1 id="overlay-title">星詠みのこはく</h1>
             <p id="overlay-message">ふしぎな神社に迷いこんだ妖精たち。星の札を放って、夜空の平和を取りもどそう！</p>
+            <label id="difficulty-control" class="debug-phase-control">
+              難易度
+              <select id="difficulty-select">
+                <option value="easy">かんたん</option>
+                <option value="normal">ふつう</option>
+                <option value="hard">むずかしい</option>
+                <option value="oni">おにモード</option>
+              </select>
+            </label>
+            <label id="debug-phase-control" class="debug-phase-control" hidden>
+              デバッグ開始位置
+              <select id="debug-phase-select">
+                <option value="1">STAGE 1 - PHASE 1</option>
+                <option value="2">STAGE 1 - PHASE 2</option>
+                <option value="3">STAGE 1 - PHASE 3（中ボス）</option>
+                <option value="4">STAGE 1 - PHASE 4</option>
+                <option value="5">STAGE 1 - PHASE 5</option>
+                <option value="6">STAGE 1 - PHASE 6</option>
+                <option value="101">STAGE 1 BOSS（狐）</option>
+                <option value="7">STAGE 2 - PHASE 1</option>
+                <option value="8">STAGE 2 - PHASE 2</option>
+                <option value="9">STAGE 2 - PHASE 3（中ボス）</option>
+                <option value="10">STAGE 2 - PHASE 4</option>
+                <option value="11">STAGE 2 - PHASE 5</option>
+                <option value="12">STAGE 2 - PHASE 6</option>
+                <option value="102">STAGE 2 BOSS（氷龍）</option>
+                <option value="13">STAGE 3 - PHASE 1</option>
+                <option value="14">STAGE 3 - PHASE 2</option>
+                <option value="15">STAGE 3 - PHASE 3（中ボス）</option>
+                <option value="16">STAGE 3 - PHASE 4</option>
+                <option value="17">STAGE 3 - PHASE 5</option>
+                <option value="18">STAGE 3 - PHASE 6</option>
+                <option value="103">STAGE 3 BOSS（鳳凰）</option>
+                <option value="19">STAGE 4 - PHASE 1</option>
+                <option value="20">STAGE 4 - PHASE 2</option>
+                <option value="21">STAGE 4 - PHASE 3（中ボス）</option>
+                <option value="22">STAGE 4 - PHASE 4</option>
+                <option value="23">STAGE 4 - PHASE 5</option>
+                <option value="24">STAGE 4 - PHASE 6</option>
+                <option value="104">STAGE 4 BOSS（白鹿）</option>
+                <option value="25">STAGE 5 - PHASE 1</option>
+                <option value="26">STAGE 5 - PHASE 2</option>
+                <option value="27">STAGE 5 - PHASE 3（中ボス）</option>
+                <option value="28">STAGE 5 - PHASE 4</option>
+                <option value="29">STAGE 5 - PHASE 5</option>
+                <option value="30">STAGE 5 - PHASE 6</option>
+                <option value="105">STAGE 5 BOSS（天龍）</option>
+              </select>
+            </label>
             <button id="start-button" type="button">出撃する</button>
+            <section id="pause-controls" class="pause-controls" hidden aria-label="一時停止メニュー">
+              <button id="resume-button" type="button">ゲームに戻る</button>
+              <label class="debug-phase-control">
+                開始するステージ
+                <select id="pause-stage-select">
+                  <option value="1">STAGE 1 — 夜桜の神社</option>
+                  <option value="2">STAGE 2 — 深海と氷海</option>
+                  <option value="3">STAGE 3 — 紅蓮火山</option>
+                  <option value="4">STAGE 4 — 月影の竹林</option>
+                  <option value="5">STAGE 5 — 星冠の天空城</option>
+                </select>
+              </label>
+              <button id="start-stage-button" type="button">選んだ面から開始</button>
+              <button id="restart-button" type="button">最初からやりなおし</button>
+              <button id="retry-phase-button" type="button">このフェーズをやりなおし</button>
+            </section>
+            <section id="continue-controls" class="pause-controls continue-controls" hidden aria-label="コンティニュー">
+              <button id="continue-button" type="button">コンティニュー</button>
+              <button id="give-up-button" type="button">あきらめる</button>
+            </section>
             <small>移動：矢印 / WASD　ショット：スペース　低速：Shift　ボム：X</small>
           </div>
         </div>

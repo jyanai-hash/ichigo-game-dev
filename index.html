@@ -2,9 +2,32 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#17142b">
   <title>星詠みのこはく — 幻想シューティング</title>
+  <script>
+    (() => {
+      const userAgent = navigator.userAgent;
+      const isIpad = /iPad/i.test(userAgent)
+        || (/Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1);
+      const isTablet = isIpad
+        || /Silk|Kindle|KF[A-Z0-9]+|PlayBook|Tablet/i.test(userAgent)
+        || (/Android/i.test(userAgent) && !/Mobile/i.test(userAgent));
+      const isMobile = /iPhone|iPod|Android.*Mobile|IEMobile|Windows Phone/i.test(userAgent);
+      const root = document.documentElement;
+      if (isTablet) root.classList.add('device-tablet');
+      if (isMobile) root.classList.add('device-mobile');
+      if (isTablet || isMobile) root.classList.add('device-handheld');
+      const updateImmersiveMode = () => {
+        const compactScreen = window.matchMedia(
+          '(max-width: 760px), (max-height: 560px) and (pointer: coarse)'
+        ).matches;
+        root.classList.toggle('immersive-mode', isTablet || isMobile || compactScreen);
+      };
+      updateImmersiveMode();
+      window.addEventListener('resize', updateImmersiveMode);
+    })();
+  </script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -113,15 +136,19 @@
             <small>移動：矢印 / WASD　ショット：スペース　低速：Shift　ボム：X</small>
           </div>
         </div>
-      </div>
-      <div class="touch-controls" aria-label="タッチ操作">
-        <button type="button" data-control="left" aria-label="左へ">◀</button>
-        <button type="button" data-control="up" aria-label="上へ">▲</button>
-        <button type="button" data-control="fire" aria-label="ショット">✦</button>
-        <button type="button" data-control="down" aria-label="下へ">▼</button>
-        <button type="button" data-control="right" aria-label="右へ">▶</button>
-        <button type="button" data-control="slow" aria-label="低速モード">低速</button>
-        <button type="button" data-control="bomb" aria-label="ボム">ボム</button>
+        <div class="touch-controls" aria-label="タッチ操作">
+          <div class="touch-actions" aria-label="ショットとボム">
+            <button type="button" data-control="fire" aria-label="ショット">✦</button>
+            <button type="button" data-control="bomb" aria-label="ボム">ボム</button>
+            <button type="button" data-control="slow" aria-label="低速モード">低速</button>
+          </div>
+          <div class="touch-dpad" aria-label="移動操作">
+            <button type="button" data-control="up" aria-label="上へ">▲</button>
+            <button type="button" data-control="left" aria-label="左へ">◀</button>
+            <button type="button" data-control="right" aria-label="右へ">▶</button>
+            <button type="button" data-control="down" aria-label="下へ">▼</button>
+          </div>
+        </div>
       </div>
     </section>
     <footer>妖精を倒して強化アイテムを集めよう。弾幕を避けて、夜空を守ろう！</footer>

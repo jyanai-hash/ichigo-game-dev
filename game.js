@@ -67,6 +67,7 @@
   const baseHeight = 600;
   let W = baseWidth;
   let H = baseHeight;
+  let worldReady = false;
   const keys = new Set();
   const controls = { left: false, right: false, up: false, down: false, fire: false, slow: false, bomb: false };
   const bestKey = 'kohakuShooterBest';
@@ -356,21 +357,48 @@
   difficultySelect.value = difficulty;
   bestElement.textContent = formatScore(best);
 
+  function scaleVerticalCoordinates(value, scale, seen = new Set()) {
+    if (!value || typeof value !== 'object' || seen.has(value)) return;
+    seen.add(value);
+    for (const [key, child] of Object.entries(value)) {
+      if (typeof child === 'number' && /y$/i.test(key)) {
+        value[key] = child * scale;
+      } else if (child && typeof child === 'object') {
+        scaleVerticalCoordinates(child, scale, seen);
+      }
+    }
+  }
+
   function resizeCanvas() {
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
-    const canvasWidth = Math.max(320, Math.min(window.innerWidth - 24, baseWidth));
-    const canvasHeight = (canvasWidth / baseWidth) * baseHeight;
+    const immersive = document.documentElement.classList.contains('immersive-mode');
+    const canvasWidth = immersive
+      ? canvas.parentElement.clientWidth
+      : Math.min(canvas.parentElement.clientWidth, baseWidth);
+    const canvasHeight = immersive
+      ? canvas.parentElement.clientHeight
+      : (canvasWidth / baseWidth) * baseHeight;
+    const nextHeight = canvasWidth > 0
+      ? immersive ? canvasHeight * baseWidth / canvasWidth : baseHeight
+      : baseHeight;
+    if (worldReady && H > 0 && nextHeight !== H) {
+      const scale = nextHeight / H;
+      [
+        player, spirits, shots, enemyShots, items, particles, stars, midBoss, stageBoss
+      ].forEach((value) => scaleVerticalCoordinates(value, scale));
+    }
+    H = nextHeight;
     canvas.style.width = `${canvasWidth}px`;
     canvas.style.height = `${canvasHeight}px`;
     canvas.width = Math.round(baseWidth * ratio);
-    canvas.height = Math.round(baseHeight * ratio);
+    canvas.height = Math.round(H * ratio);
     W = baseWidth;
-    H = baseHeight;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
   }
   window.addEventListener('resize', resizeCanvas);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', resizeCanvas);
   resizeCanvas();
   updateHud();
 
@@ -727,6 +755,7 @@
     stars.push({ x: Math.random() * W, y: -8, size: 1 + Math.random() * 2.5, speed: 18 + Math.random() * 36, alpha: .25 + Math.random() * .65 });
   }
   for (let i = 0; i < 90; i++) stars.push({ x: Math.random() * W, y: Math.random() * H, size: 1 + Math.random() * 2.5, speed: 18 + Math.random() * 36, alpha: .25 + Math.random() * .65 });
+  worldReady = true;
 
   function spawnSpirit() {
     const designs = enemyPhaseDesigns[phase];

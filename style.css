@@ -65,11 +65,21 @@ h1 { margin: 7px 0 6px; color: #ffd5e9; font-size: clamp(1.35rem, 5vw, 1.8rem); 
 .pause-controls .debug-phase-control { margin: 4px auto 0; }
 .pause-controls #restart-button, .pause-controls #retry-phase-button { background: #66517f; box-shadow: 0 4px 0 #44365b; }
 .overlay-card small { display: block; margin-top: 17px; color: #c4a4cf; font-size: .72rem; font-weight: 700; }
-.touch-controls { display: none; justify-content: center; flex-wrap: wrap; gap: 8px; padding-top: 12px; }
-.touch-controls button { width: 54px; height: 46px; border: 1px solid #73547f; border-radius: 14px; background: #302543; color: #ffd5e9; font-size: 1.05rem; font-weight: 900; touch-action: none; user-select: none; }
-.touch-controls button[data-control="fire"] { background: #ce629c; color: #fff; }
-.touch-controls button[data-control="slow"] { width: 58px; color: #9cecff; font-size: .76rem; }
-.touch-controls button[data-control="bomb"] { width: 58px; background: #8d5d9d; color: #ffe99a; font-size: .76rem; }
+.touch-controls { position: absolute; inset: 0; z-index: 1; display: none; align-items: flex-end; justify-content: space-between; padding: 14px; pointer-events: none; }
+.touch-controls button { border: 1px solid #a17baa; border-radius: 14px; background: #302543c9; color: #ffd5e9; font-size: 1.05rem; font-weight: 900; touch-action: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.touch-actions { display: grid; grid-template-columns: 52px 58px; gap: 7px; pointer-events: auto; }
+.touch-actions button { min-height: 48px; }
+.touch-actions button[data-control="fire"] { background: #ce629ce8; color: #fff; }
+.touch-actions button[data-control="slow"] { grid-column: 1 / -1; justify-self: start; width: 52px; min-height: 38px; color: #9cecff; font-size: .76rem; }
+.touch-actions button[data-control="bomb"] { background: #8d5d9de8; color: #ffe99a; font-size: .76rem; }
+.touch-dpad { display: grid; grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(3, 46px); gap: 4px; pointer-events: auto; }
+.touch-dpad button { width: 46px; height: 46px; border-radius: 13px; }
+.touch-dpad button[data-control="up"] { grid-column: 2; grid-row: 1; }
+.touch-dpad button[data-control="left"] { grid-column: 1; grid-row: 2; }
+.touch-dpad button[data-control="right"] { grid-column: 3; grid-row: 2; }
+.touch-dpad button[data-control="down"] { grid-column: 2; grid-row: 3; }
+.touch-controls button:active { filter: brightness(1.3); }
+.overlay:not(.hidden) ~ .touch-controls { display: none; }
 footer { padding: 14px 6px 0; text-align: center; line-height: 1.6; }
 @media (max-width: 760px) {
   .game-shell { padding: 12px 8px 18px; }
@@ -88,7 +98,7 @@ footer { padding: 14px 6px 0; text-align: center; line-height: 1.6; }
   .upgrade-status { grid-template-columns: 1fr; gap: 3px; margin: 0 3px 8px; }
   .upgrade-row { grid-template-columns: 64px minmax(24px, 1fr) 32px; font-size: .62rem; }
   .upgrade-row progress { height: 6px; }
-  .touch-controls { display: flex; }
+  .touch-controls { display: flex; padding: clamp(8px, 2.5vw, 14px); }
   .overlay-card { padding: 14px 16px 16px; }
   .hero-portrait { width: 70px; height: 82px; }
 }
@@ -100,8 +110,89 @@ footer { padding: 14px 6px 0; text-align: center; line-height: 1.6; }
   .game-card { padding: 6px; }
   .hud { flex-wrap: wrap; justify-content: space-between; }
   .hud > div { min-width: 0; }
-  .touch-controls { gap: 6px; }
-  .touch-controls button { width: clamp(42px, 14vw, 56px); height: 42px; border-radius: 12px; }
-  .touch-controls button[data-control="slow"],
-  .touch-controls button[data-control="bomb"] { width: clamp(52px, 16vw, 68px); }
+  .touch-actions { grid-template-columns: 48px 54px; gap: 6px; }
+  .touch-actions button { min-height: 44px; }
+  .touch-actions button[data-control="slow"] { width: 48px; min-height: 36px; }
+  .touch-dpad { grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(3, 40px); gap: 4px; }
+  .touch-dpad button { width: 40px; height: 40px; border-radius: 11px; }
+}
+
+.immersive-mode,
+.immersive-mode body {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+.immersive-mode body { display: flex; }
+.immersive-mode .game-shell {
+  display: flex;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+.immersive-mode .topbar,
+.immersive-mode footer,
+.immersive-mode .weapon-effect,
+.immersive-mode .bonus-effect,
+.immersive-mode .upgrade-status { display: none; }
+.immersive-mode .game-card {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.immersive-mode .hud {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  left: 0;
+  min-height: 0;
+  padding: 8px clamp(8px, 2vw, 18px);
+  background: linear-gradient(#17142bd9, #17142b88 75%, transparent);
+  pointer-events: none;
+}
+.immersive-mode .hud-label { font-size: clamp(.52rem, 1.5vw, .65rem); }
+.immersive-mode .hud strong { font-size: clamp(.68rem, 2vw, .96rem); }
+.immersive-mode #lives { font-size: clamp(.65rem, 1.9vw, .9rem); }
+.immersive-mode #power,
+.immersive-mode #bombs { font-size: clamp(.6rem, 1.8vw, .82rem); }
+.immersive-mode .canvas-wrap {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+}
+.immersive-mode canvas {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+.immersive-mode .touch-controls { display: flex; }
+.immersive-mode .overlay { padding: 12px; }
+.immersive-mode .overlay-card {
+  max-height: 100%;
+  overflow-y: auto;
+}
+.immersive-mode .hero-portrait { display: none; }
+.device-tablet .touch-dpad {
+  grid-template-columns: repeat(3, 58px);
+  grid-template-rows: repeat(3, 58px);
+  gap: 5px;
+}
+.device-tablet .touch-dpad button { width: 58px; height: 58px; }
+.device-tablet .touch-actions {
+  grid-template-columns: 64px 72px;
+  gap: 9px;
+}
+.device-tablet .touch-actions button { min-height: 60px; }
+.device-tablet .touch-actions button[data-control="slow"] {
+  width: 64px;
+  min-height: 46px;
 }
